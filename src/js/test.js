@@ -1,3 +1,3 @@
-console.log("importing files");
+console.log('importing file');
 
-export default 23; 
+export default 23;
