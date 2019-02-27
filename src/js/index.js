@@ -1,6 +1,7 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe'
 import * as searchView from './views/searchView';
+import * as recipeView from './views/recipeView';
 import {elements, renderLoader, clearLoader} from './views/base';
 // * Global state of the app
 // * - Search object
@@ -14,8 +15,8 @@ const state = {};
 // SEARCH CONTROLLER
 const controlSearch = async () => {
     // 1) Get query from view
-    // const query = searchView.getInput();
-    const query = 'pizza';
+    const query = searchView.getInput();
+    // const query = 'pizza';  -> testing
 
     if (query) {
         // 2) New search object and add to state;
@@ -43,15 +44,14 @@ elements.searchForm.addEventListener('submit', e => {
     controlSearch();
 });
 
-window.addEventListener('load', e => {
-    e.preventDefault();
-    controlSearch();
-});
+// window.addEventListener('load', e => {
+//     e.preventDefault();
+//     controlSearch();
+// });
 
 elements.searchResPage.addEventListener('click', e => {
     const btn = e.target.closest(".btn-inline")
-    console.log(btn);
-    // const btn = e.target.closest('.btn-inline');
+    
     if (btn) {
         const goToPage = parseInt(btn.dataset.goto, 10);
         console.log(goToPage)
@@ -68,23 +68,29 @@ const controlRecipe = async () => {
     const id = window.location.hash.replace('#','');
     if (id) {
         // prepare UI for changes
-
+        recipeView.clearRecipe();
+        renderLoader(elements.recipe)
         // Create new Recipe object
         state.recipe = new Recipe(id);
-        window.r = state.recipe;
+        // window.r = state.recipe; --> Testing
         try {
-            // Get recipe data
+            // Get recipe data and parse ingredients
             await state.recipe.getRecipe();
+            state.recipe.parseIngredients();
+            
+            // calculate servings and time
             state.recipe.calcTime();
             state.recipe.calcServing();
         }catch(error) {
-            console.log(error)
+            console.log(error);
         }
 
         //calculate servings and time
 
         // Render recipe
-        console.log(state.recipe)
+        clearLoader();
+        recipeView.renderRecipe(state.recipe);
+        // console.log(state.recipe);
     }
 }
 
