@@ -1,5 +1,6 @@
 import Search from './models/Search';
 import Recipe from './models/Recipe'
+import List from './models/List'
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
 import {elements, renderLoader, clearLoader} from './views/base';
@@ -17,7 +18,6 @@ const controlSearch = async () => {
     // 1) Get query from view
     const query = searchView.getInput();
     // const query = 'pizza';  -> testing
-
     if (query) {
         // 2) New search object and add to state;
         state.search = new Search(query);
@@ -118,3 +118,29 @@ elements.recipe.addEventListener('click', e => {
     }
     console.log(state.recipe)
 });
+
+
+window.l = new List();
+
+
+
+
+
+
+
+
+
+
+
+
+
+//TEST LIMIT
+// async function getResults() {
+//     try {
+//         const res = await fetch(`https://www.food2fork.com/api/search?key=39db77182b993b7eb2f3ff7981a60b45&q=$pizza`);
+//         const result = await res.json();
+//         console.log(result);
+//     }catch(err) {
+//         alert(err)
+//     }
+//  }
