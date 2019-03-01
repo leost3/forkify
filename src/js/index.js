@@ -1,8 +1,11 @@
 import Search from './models/Search';
-import Recipe from './models/Recipe'
-import List from './models/List'
+import Recipe from './models/Recipe';
+import List from './models/List';
+import Likes from './models/Likes';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
+import * as listView from './views/listView';
+import * as likesView from './views/likesView';
 import {elements, renderLoader, clearLoader} from './views/base';
 // * Global state of the app
 // * - Search object
@@ -13,6 +16,9 @@ import {elements, renderLoader, clearLoader} from './views/base';
 
 
 const state = {};
+window.state = state;
+
+
 // SEARCH CONTROLLER
 const controlSearch = async () => {
     // 1) Get query from view
@@ -94,14 +100,79 @@ const controlRecipe = async () => {
 
         // Render recipe
         clearLoader();
+        // console.log(state.recipe)
         recipeView.renderRecipe(state.recipe);
         // console.log(state.recipe);
     }
 }
 
 
+// List Controller
+
+const controlList = () => {
+    // Create new list of there in none yet
+    if (!state.list) state.list = new List();
+    console.log(state);
+    // Add new ingredient to the list and UI
+    state.recipe.ingredients.forEach(el => {
+        const item = state.list.addItem(el.count, el.unit, el.ingredient);
+        listView.renderItem(item);
+    })
+}
+// LIKE CONTROLLER
+
+
+
+
+
+
 window.addEventListener('hashchange', controlRecipe);
 window.addEventListener('load', controlRecipe);
+
+
+// Handling delete and update list items events
+elements.shopping.addEventListener('click', e => {
+    const id = e.target.closest('.shopping__item').dataset.itemid;
+    console.log(e.target)
+
+    // Handle delete button
+    if (e.target.matches('.shopping__delete, .shopping__delete *')) {
+        console.log('matched delete')
+        state.list.deleteItem(id);
+        listView.deleteItem(id);
+    } else if (e.target.matches('.shopping__count-value')) {
+        const val = parseFloat(e.target.value, 10);
+        state.list.updateCount(id, val);
+    }
+});
+
+const controlLike = () => {
+    if (!state.likes) state.likes = new Likes();
+    const currentID = state.recipe.id;
+    // USer has not yet liked current recipe
+    if(!state.likes.isLiked(currentID)) {
+        // Add like to the state
+        const newLike = state.likes.addLike(currentID, state.recipe.title, state.recipe.author, state.recipe.img);
+        // Toggle the like button
+        likesView.toggleLikeBtn(true);
+        // Add like to UI list
+        console.log(state.likes)
+        
+        //  User has liked current recipe
+    } else {
+        // Remove like from the state
+        state.likes.deleteLike(currentID);
+        // Toggle the like button
+        likesView.toggleLikeBtn(false);
+
+        // Remove like to UI list
+        console.log(state.likes)
+        
+
+    }
+}
+
+
 
 // Handling recipe button clicks
 elements.recipe.addEventListener('click', e => {
@@ -115,12 +186,16 @@ elements.recipe.addEventListener('click', e => {
         // Decrease when button is clicked
         state.recipe.updateServings('inc');
         recipeView.updateServingsIngredients(state.recipe)
+    }else if (e.target.matches('.recipe__btn--add, .recipe__btn--add *')) {
+        // add ingredients to shopping List
+        controlList();
+    } else if (e.target.matches('.recipe__love, .recipe__love *')) {
+        // Like controller
+        controlLike();
     }
-    console.log(state.recipe)
 });
 
 
-window.l = new List();
 
 
 
@@ -133,8 +208,10 @@ window.l = new List();
 
 
 
-
-//TEST LIMIT
+// //TEST LIMIT
+// const key = '39db77182b993b7eb2f3ff7981a60b45'; //leost3
+// const key = '52ac8fe51914f04bb72dac3a9da13ec3 '; // leomontreala2
+// const key = 'ef637c6941e34e3e23e7390dc027a7f7  '; //webdevlasalle
 // async function getResults() {
 //     try {
 //         const res = await fetch(`https://www.food2fork.com/api/search?key=39db77182b993b7eb2f3ff7981a60b45&q=$pizza`);

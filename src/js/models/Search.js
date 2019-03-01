@@ -8,6 +8,7 @@ export default class Search {
 
     async getResults() {
         try {
+            // ${cors}
             const cors = 'https://api.codetabs.com/v1/proxy?quest=';
             const res = await axios(`${cors}https://www.food2fork.com/api/search?key=${key}&q=${this.query}`);
             this.result = res.data.recipes;
