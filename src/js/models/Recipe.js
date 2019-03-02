@@ -11,7 +11,7 @@ export default class Recipe {
             // ${this.id}
             // ${cors}
             const cors = 'https://api.codetabs.com/v1/proxy?quest=';
-            const res = await axios(`https://www.food2fork.com/api/get?key=ef637c6941e34e3e23e7390dc027a7f7&rId=35382`);
+            const res = await axios(`https://www.food2fork.com/api/get?key=db635e4fa5e8116059c1c517e33858b6&rId=35382`);
             this.title =  res.data.recipe.title;
             this.author =  res.data.recipe.publisher;
             this.img =  res.data.recipe.image_url;  
